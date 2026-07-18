@@ -98,9 +98,10 @@ export default function AssemblyEndgame() {
     })
 
     const letterElements = currentWord.split("").map((letter, index) => {
-        const shouldRevealLetter = isGameLost || guessedLetters.includes(letter)
+        const shouldRevealLetter = isGameLost || isGameOver || guessedLetters.includes(letter)
         const letterClassName = clsx(
-            isGameLost && !guessedLetters.includes(letter) && "missed-letter"
+            isGameLost && !guessedLetters.includes(letter) && "missed-letter",
+            isGameOver && !guessedLetters.includes(letter) && "missed-letter",
         )
         return (
             <span key={index} className={letterClassName}>
