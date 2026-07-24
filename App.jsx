@@ -10,8 +10,8 @@ export default function AssemblyEndgame() {
     // State values
     const [currentWord, setCurrentWord] = useState(() => getRandomWord())
     const [guessedLetters, setGuessedLetters] = useState([])
-    const [timeLeft, setTimeLeft] = useState(30)
     const [isRunning, setIsRunning] = useState(false)
+    const [newGameKey, setNewGameKey] = useState(0)
 
     // Derived values
     let numGuessesLeft = 8
@@ -20,22 +20,9 @@ export default function AssemblyEndgame() {
     const isGameWon =
         currentWord.split("").every(letter => guessedLetters.includes(letter))
     const isGameLost = wrongGuessCount >= numGuessesLeft
-    const isGameOver = isGameWon || isGameLost || timeLeft <= 0
+    const isGameOver = isGameWon || isGameLost
     const lastGuessedLetter = guessedLetters[guessedLetters.length - 1]
     const isLastGuessIncorrect = lastGuessedLetter && !currentWord.includes(lastGuessedLetter)
-
-    useEffect(() => {
-        if (!isRunning) return;
-        if (timeLeft <= 0) return;
-
-        if (isGameOver || isGameLost || isGameWon) return;
-
-        const timer = setInterval(() => {
-            setTimeLeft((prevTime) => prevTime - 1);
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, [timeLeft, isRunning, isGameOver, isGameLost, isGameWon])
 
     // Static values
     const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -56,8 +43,8 @@ export default function AssemblyEndgame() {
     function startNewGame() {
         setCurrentWord(getRandomWord())
         setGuessedLetters([])
-        setTimeLeft(30)
         setIsRunning(false)
+        setNewGameKey(k => k + 1)
     }
 
     const languageElements = languages.map((lang, index) => {
@@ -234,7 +221,14 @@ export default function AssemblyEndgame() {
             </section>
 
             <section className="countdown-section">
-                <Countdown totalTime={TOTAL_TIME} timeLeft={timeLeft} />
+                <Countdown 
+                    totalTime={TOTAL_TIME} 
+                    isGameOver={isGameOver} 
+                    isGameLost={isGameLost} 
+                    isGameWon={isGameWon} 
+                    isRunning={isRunning} 
+                    newGame={newGameKey} 
+                />
                 {!isRunning ? <button onClick={handleStartCountdown} className="countdown-button">Start</button> : <h3 className="luck-message">Good Luck!</h3>}
             </section>
 

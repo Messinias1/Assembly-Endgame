@@ -1,6 +1,25 @@
 import React from "react"
+import { useState, useEffect } from "react"
 
-export default function Countdown({ timeLeft, totalTime }) {
+export default function Countdown({ totalTime, isGameOver, isGameLost, isGameWon, isRunning, newGame }) {
+    const [timeLeft, setTimeLeft] = useState(totalTime)
+
+    useEffect(() => {
+        setTimeLeft(totalTime)
+    }, [newGame, totalTime])
+
+    useEffect(() => {
+        if (!isRunning) return;
+        if (timeLeft <= 0) return;
+        if (isGameOver || isGameLost || isGameWon) return;
+
+        const timer = setInterval(() => {
+            setTimeLeft((prevTime) => prevTime - 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [timeLeft, isGameOver, isGameLost, isGameWon, isRunning, totalTime]);
+
     const radius = 60;
     const circumference = 2 * Math.PI * radius;
     const percent = Math.max(0, timeLeft / totalTime);
